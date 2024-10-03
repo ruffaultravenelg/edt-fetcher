@@ -2,11 +2,18 @@ import requests
 import xml.etree.ElementTree as ET
 import json
 import re
+import sys
 from info import RSS_LINK
 
 # Fetcher le contenu XML
 response = requests.get(RSS_LINK)
 rss_content = response.text
+
+#Check response
+if not response.ok:
+    print("ERROR")
+    print(response.text)
+    exit()
 
 # Parser le contenu XML
 root = ET.fromstring(rss_content)
@@ -43,6 +50,7 @@ for item in root.find("channel").findall("item"):
     
     # Créer un dictionnaire pour cet événement
     event_data = {
+        "guid": item.find("guid").text,
         "titre": item.find("title").text,
         "jour": jour,
         "heure_debut": heure_debut,
@@ -55,8 +63,11 @@ for item in root.find("channel").findall("item"):
     # Ajouter cet événement à la liste des événements
     events.append(event_data)
 
-# Convertir en JSON
-events_json_string = json.dumps(events, indent=4, ensure_ascii=False)
+# Enregistre le JSON final
+if len(sys.argv) > 1:
+    filename = sys.argv[1]
+else:
+    filename = 'data.json'  # Valeur par défaut si aucun argument n'est fourni
 
-# Afficher le JSON final
-print(events_json_string)
+with open(filename, 'w') as f:
+    json.dump(events, f, indent=4)
