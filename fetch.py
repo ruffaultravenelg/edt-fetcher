@@ -3,10 +3,10 @@ import xml.etree.ElementTree as ET
 import json
 import re
 import sys
-from info import RSS_LINK
+from info import LINK
 
 # Fetcher le contenu XML
-response = requests.get(RSS_LINK)
+response = requests.get(LINK)
 rss_content = response.text
 
 #Check response
