@@ -5,8 +5,13 @@ import re
 import sys
 from info import LINK
 
+# Ajouter un User-Agent pour imiter un navigateur
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
+}
+
 # Fetcher le contenu XML
-response = requests.get(LINK)
+response = requests.get(LINK, headers=headers)
 rss_content = response.text
 
 #Check response
@@ -20,6 +25,22 @@ root = ET.fromstring(rss_content)
 
 # Initialiser une liste pour stocker les événements
 events = []
+
+# Fonction pour formater correctement le nom
+def format_professeur_name(name):
+    if name is None:
+        return None
+    return name.lower().title()
+
+# Fonction pour formater correctement la salle
+def format_salle_name(name):
+    if name is None:
+        return None
+    known_rooms = ["TP1", "TP2", "TP3", "TP4", "TD1", "TD2", "TDm1", "TDm2", "TDm3", "TDm4", "Amphi 2", "Amphi 1", "Amphi 3", "Amphi Le Balle"]
+    for room in known_rooms:
+        if room in name:
+            return room
+    return name
 
 # Fonction pour extraire les informations de la description
 def parse_description(description):
@@ -56,8 +77,8 @@ for item in root.find("channel").findall("item"):
         "heure_debut": heure_debut,
         "heure_fin": heure_fin,
         "groupe": groupe,
-        "professeur": professeur,
-        "salle": salle
+        "professeur": format_professeur_name(professeur),
+        "salle": format_salle_name(salle)
     }
 
     # Ajouter cet événement à la liste des événements

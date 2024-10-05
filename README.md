@@ -1,6 +1,8 @@
 # 📅 Backend - Emploi du temps universitaire - IUT de Laval
 
-Ce dépôt contient le **backend** responsable de la collecte, de l'analyse et de la transformation des données de l'emploi du temps universitaire. Le backend récupère quotidiennement les informations depuis une source au format XML et les convertit en un fichier JSON exploitable par le frontend.
+Ce dépôt contient le **backend** responsable de la collecte, de l'analyse et de la transformation des données de l'emploi du temps universitaire. Le backend récupère quotidiennement les informations depuis une source au format XML et les convertit en un fichier JSON exploitable par le frontend (<https://github.com/ruffaultravenelg/edt-front.git>).
+
+Accessible depuis [edt.gemino.dev](https://edt.gemino.dev)
 
 ## ⚙️ Fonctionnalités
 
@@ -14,8 +16,8 @@ Ce dépôt contient le **backend** responsable de la collecte, de l'analyse et d
 1. **Cloner le dépôt** :
 
    ```bash
-   git clone https://github.com/ruffaultravenelg/planning_fetcher.git
-   cd planning_fetcher
+   git clone https://github.com/ruffaultravenelg/edt-back.git
+   cd edt-back
    ```
 
 2. **Configurer la source de données** :
