@@ -4,6 +4,7 @@ import requests
 from icalendar import Calendar
 from datetime import datetime
 import os
+import re
 
 # Path to the JSON file containing class links
 LINKS = os.path.join(os.path.dirname(__file__), "links.json")
@@ -39,6 +40,11 @@ def parse_ics_to_json(ics_content):
             dtstart = dtstart.astimezone(local_tz)
             dtend = dtend.astimezone(local_tz)
 
+            # Extract professor's name from DESCRIPTION
+            description = component.get("DESCRIPTION", "")
+            professor_match = re.search(r'\n([A-Z][A-Z ]+[A-Z])\n', description)
+            professor = professor_match.group(1).strip() if professor_match else None
+
             # Build the event dictionary
             event = {
                 "guid": component.get("UID").split("-")[-1] if component.get("UID") else None,
@@ -46,8 +52,7 @@ def parse_ics_to_json(ics_content):
                 "date": dtstart.strftime('%d/%m/%Y'),
                 "start_time": dtstart.strftime('%H:%M'),
                 "end_time": dtend.strftime('%H:%M'),
-                "group": component.get("DESCRIPTION").split("\n")[2].strip() if component.get("DESCRIPTION") else None,
-                "professor": component.get("DESCRIPTION").split("\n")[1].strip() if component.get("DESCRIPTION") else None,
+                "professor": professor,
                 "room": component.get("LOCATION"),
                 "type": None  # Type of event (e.g., TDm, TD, TP, CM)
             }
