@@ -1,54 +1,71 @@
 # 📅 Backend - Emploi du temps universitaire - IUT de Laval
 
-Ce dépôt contient le **backend** responsable de la collecte, de l'analyse et de la transformation des données de l'emploi du temps universitaire. Le backend récupère quotidiennement les informations depuis une source au format XML et les convertit en un fichier JSON exploitable par le frontend (<https://github.com/ruffaultravenelg/edt-front.git>).
+Ce dépôt contient le **backend** permettant de gérer l'emploi du temps universitaire. Il s'occupe de la collecte, de l'analyse et de la transformation des données XML en JSON, prêtes à être utilisées par un frontend ou toute autre application.
 
 Accessible depuis [edt.gemino.dev](https://edt.gemino.dev)
 
+---
+
 ## ⚙️ Fonctionnalités
 
-- **Récupération des données** : Le backend récupère les données de l'emploi du temps sous forme de flux RSS/XML depuis une source externe.
-- **Analyse des informations** : Les informations importantes (date, heures, groupe, professeur, salle, etc.) sont extraites à partir du contenu XML..
-- **Transformation en JSON** : Une fois les données extraites, elles sont formatées et enregistrées dans un fichier JSON.
-- **Tâche automatisée** : Le script est prévu pour être exécuté automatiquement chaque jour via une tâche cron, garantissant des informations toujours à jour.
+- **Récupération des données** : Télécharge les données d'emploi du temps au format RSS/XML depuis une source externe.
+- **Nettoyage et transformation** : Analyse et nettoie les données pour les formater en un fichier JSON exploitable. Cela inclut :
+  - Extraction des informations clés (date, heures, groupe, professeur, salle, etc.).
+  - Normalisation des textes pour corriger les encodages défectueux.
+- **Flexibilité** :
+  - Récupération uniquement (`fetch`).
+  - Nettoyage uniquement (`clean`).
+  - Fonctionnement complet (`fetch` + `clean`).
+- **Tâche automatisée** : Conçu pour être exécuté régulièrement via une tâche cron, garantissant des données toujours à jour.
+
+---
 
 ## 📥 Utilisation
 
-1. **Cloner le dépôt** :
+### 1. **Cloner le dépôt**
+```bash
+git clone https://github.com/ruffaultravenelg/edt-back.git
+cd edt-back
+```
 
-   ```bash
-   git clone https://github.com/ruffaultravenelg/edt-back.git
-   cd edt-back
-   ```
+### 2. **Configurer la source de données**
+Définissez le lien vers le flux RSS/XML dans le fichier `info.py` sous la variable `LINK` :
+```python
+# info.py
+LINK = 'https://example.com/path-to-xml'
+```
 
-2. **Configurer la source de données** :
+### 3. **Commandes disponibles**
+- **Récupérer et nettoyer les données (mode complet)** :
+  ```bash
+  python3 main.py
+  ```
+- **Récupérer uniquement les données XML** :
+  ```bash
+  python3 main.py fetch
+  ```
+- **Nettoyer uniquement les données XML pour produire le JSON** :
+  ```bash
+  python3 main.py clean
+  ```
 
-   Le lien vers le flux XML doit être défini dans le fichier `info.py` sous la variable `LINK`.
+### 4. **Automatisation**
+Intégrez le script à une tâche cron pour l'exécuter régulièrement.
 
-   Exemple :
+Exemple : mise à jour quotidienne à 6h du matin :
+```bash
+0 6 * * * /usr/bin/python3 /chemin/vers/ton/script/main.py
+```
 
-   ```python
-   # info.py
-   LINK = 'https://example.com/path-to-xml'
-   ```
+---
 
-3. **Exécuter le script** :
+## 📂 Sorties
 
-   Par défaut, le fichier JSON sera sauvegardé sous le nom `data.json`. Il est possible de spécifier un autre nom pour le fichier en le passent un argument au script :
+- **`data.xml`** : Contient les données brutes récupérées depuis le flux XML.
+- **`data.json`** : Contient les données nettoyées et transformées en JSON.
 
-   ```bash
-   python3 fetcher.py mon_fichier.json
-   ```
-
-4. **Automatisation** :
-
-   Le script peut être intégré à une tâche cron sur un serveur afin de s'exécuter automatiquement chaque jour. Cela garantit une mise à jour régulière des données de l'emploi du temps.
-
-   Exemple de configuration cron pour une exécution quotidienne à 6h du matin :
-
-   ```bash
-   0 6 * * * /usr/bin/python3 /chemin/vers/ton/script/fetcher.py /chemin/vers/ton/fichier/data.json
-   ```
+---
 
 ## 📄 Licence
 
-Ce projet est sous licence [GNU GPL v3.0](LICENSE).
+Ce projet est sous licence [GNU GPL v3.0](LICENSE). Contributions bienvenues via pull requests ou issues !
