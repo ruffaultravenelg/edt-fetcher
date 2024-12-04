@@ -3,9 +3,10 @@ import sys
 import requests
 from icalendar import Calendar
 from datetime import datetime
+import os
 
 # Path to the JSON file containing class links
-LINKS = "links.json"
+LINKS = os.path.join(os.path.dirname(__file__), "links.json")
 
 # Path to the JSON result file
 OUTPUT = "data.json"
