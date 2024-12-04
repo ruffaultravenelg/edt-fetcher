@@ -11,24 +11,34 @@ LINKS = os.path.join(os.path.dirname(__file__), "links.json")
 # Path to the JSON result file
 OUTPUT = "data.json"
 
+from datetime import datetime
+from pytz import timezone, UTC
+
 def parse_ics_to_json(ics_content):
     """
     Parses the ICS content and converts it into a list of dictionaries in JSON format.
     """
     events = []
     calendar = Calendar.from_ical(ics_content)
-    
+
+    # Define the desired timezone (e.g., local timezone)
+    local_tz = timezone("Europe/Paris")  # Remplacez par votre fuseau horaire local
+
     for component in calendar.walk():
         if component.name == "VEVENT":
-            # Normalize dates to remove timezone information
             dtstart = component.get("DTSTART").dt
             dtend = component.get("DTEND").dt
-            
-            if hasattr(dtstart, 'tzinfo') and dtstart.tzinfo:
-                dtstart = dtstart.replace(tzinfo=None)
-            if hasattr(dtend, 'tzinfo') and dtend.tzinfo:
-                dtend = dtend.replace(tzinfo=None)
-            
+
+            # Ensure datetime objects are timezone-aware
+            if isinstance(dtstart, datetime) and not dtstart.tzinfo:
+                dtstart = UTC.localize(dtstart)  # Assume UTC if no timezone info
+            if isinstance(dtend, datetime) and not dtend.tzinfo:
+                dtend = UTC.localize(dtend)
+
+            # Convert to the desired timezone
+            dtstart = dtstart.astimezone(local_tz)
+            dtend = dtend.astimezone(local_tz)
+
             # Build the event dictionary
             event = {
                 "guid": component.get("UID").split("-")[-1] if component.get("UID") else None,
@@ -52,6 +62,7 @@ def parse_ics_to_json(ics_content):
 
             events.append(event)
     return events
+
 
 
 def fetch_schedule(classe, links_file):
