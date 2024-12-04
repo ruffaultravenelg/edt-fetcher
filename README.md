@@ -1,22 +1,20 @@
-# 📅 Backend - Emploi du temps universitaire - IUT de Laval
+# 📅 Fetcher d'emploi du temps - Université
 
-Ce dépôt contient le **backend** permettant de gérer l'emploi du temps universitaire. Il s'occupe de la collecte, de l'analyse et de la transformation des données XML en JSON, prêtes à être utilisées par un frontend ou toute autre application.
+Ce dépôt contient un **script Python** permettant de gérer les emplois du temps universitaires. Le script télécharge les fichiers `.ics` pour une classe spécifique, les analyse et les convertit en un fichier JSON exploitable par un frontend ou d'autres applications.
 
-Accessible depuis [edt.gemino.dev](https://edt.gemino.dev)
+Mon frontend peut être accessible a l'adresse suivante : [edt.gemino.dev](https://edt.gemino.dev)
 
 ---
 
 ## ⚙️ Fonctionnalités
 
-- **Récupération des données** : Télécharge les données d'emploi du temps au format RSS/XML depuis une source externe.
-- **Nettoyage et transformation** : Analyse et nettoie les données pour les formater en un fichier JSON exploitable. Cela inclut :
+- **Téléchargement des données** : Récupère les emplois du temps au format `.ics` depuis une URL spécifiée.
+- **Analyse et transformation** : Convertit les données en JSON exploitable. Cela inclut :
   - Extraction des informations clés (date, heures, groupe, professeur, salle, etc.).
-  - Normalisation des textes pour corriger les encodages défectueux.
-- **Flexibilité** :
-  - Récupération uniquement (`fetch`).
-  - Nettoyage uniquement (`clean`).
-  - Fonctionnement complet (`fetch` + `clean`).
-- **Tâche automatisée** : Conçu pour être exécuté régulièrement via une tâche cron, garantissant des données toujours à jour.
+  - Normalisation des textes pour corriger les problèmes d'encodage.
+  - Détection du type d'événement (ex. : cours magistral, travaux dirigés, travaux pratiques).
+- **Flexibilité** : Permet de traiter les emplois du temps d'une classe donnée en ligne de commande.
+- **Intégration facile** : Peut être exécuté manuellement ou automatiquement via une tâche cron.
 
 ---
 
@@ -24,48 +22,58 @@ Accessible depuis [edt.gemino.dev](https://edt.gemino.dev)
 
 ### 1. **Cloner le dépôt**
 ```bash
-git clone https://github.com/ruffaultravenelg/edt-back.git
-cd edt-back
+git clone https://github.com/ruffaultravenelg/edt-fetcher.git
+cd edt-fetcher
 ```
 
-### 2. **Configurer la source de données**
-Définissez le lien vers le flux RSS/XML dans le fichier `info.py` sous la variable `LINK` :
-```python
-# info.py
-LINK = 'https://example.com/path-to-xml'
+### 2. **Configurer les liens des classes**
+Définissez les URLs des emplois du temps dans un fichier `links.json`. Exemple :
+```json
+[
+    {
+        "classe": "21B",
+        "url": "http://example.com/chemin-vers-ics-classe"
+    },
+    {
+        "classe": "32D",
+        "url": "http://example.com/chemin-vers-ics-classe"
+    }
+]
 ```
 
-### 3. **Commandes disponibles**
-- **Récupérer et nettoyer les données (mode complet)** :
+### 3. **Exécuter le script**
+- **Télécharger et analyser l'emploi du temps d'une classe** :
   ```bash
-  python3 main.py
+  python3 main.py <nom_classe>
   ```
-- **Récupérer uniquement les données XML** :
-  ```bash
-  python3 main.py fetch
-  ```
-- **Nettoyer uniquement les données XML pour produire le JSON** :
-  ```bash
-  python3 main.py clean
-  ```
+  Remplacez `<nom_classe>` par le nom de la classe, par exemple `21B`.
 
-### 4. **Automatisation**
-Intégrez le script à une tâche cron pour l'exécuter régulièrement.
+### 4. **Automatiser le script**
+Intégrez le script dans une tâche cron pour maintenir les données à jour.
 
-Exemple : mise à jour quotidienne à 6h du matin :
+Exemple : Exécution quotidienne à 6h du matin :
 ```bash
-0 6 * * * /usr/bin/python3 /chemin/vers/ton/script/main.py
+0 6 * * * /usr/bin/python3 /chemin/vers/votre/script/main.py <nom_classe>
 ```
 
 ---
 
-## 📂 Sorties
+## 📂 Sortie
 
-- **`data.xml`** : Contient les données brutes récupérées depuis le flux XML.
-- **`data.json`** : Contient les données nettoyées et transformées en JSON.
+- **`data.json`** : Contient les données nettoyées et formatées au format JSON, prêtes à être utilisées.
+
+---
+
+## 🛠 Prérequis
+
+- Python 3.x
+- Dépendances :
+  ```bash
+  pip install requests icalendar
+  ```
 
 ---
 
 ## 📄 Licence
 
-Ce projet est sous licence [GNU GPL v3.0](LICENSE). Contributions bienvenues via pull requests ou issues !
+Ce projet est sous licence [GNU GPL v3.0](LICENSE). Les contributions sont les bienvenues via des pull requests ou des issues !

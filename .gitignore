@@ -1,7 +1,5 @@
-# api key
-info.py
+# json result
 data.json
-data.xml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
