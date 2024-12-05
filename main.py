@@ -44,7 +44,25 @@ def parse_ics_to_json(ics_content):
             description = component.get("DESCRIPTION", "")
             professor_match = re.search(r'\n([A-Z][A-Z ]+[A-Z])\n', description)
             professor = professor_match.group(1).strip() if professor_match else None
-
+            
+            # Extract room
+            room = component.get("LOCATION")
+            rooms = [
+                        ("Arrakis-TD1", "TD1"),
+                        ("Mordor-TD2", "TD2"),
+                        ("Tamriel-TP1", "TP1"),
+                        ("Gotham-TP3", "TP3"),
+                        ("Azeroth-TP4", "TP4"),
+                        ("Vulcain-TDm1", "TDm1"),
+                        ("LV426-TDm2", "TDm2"),
+                        ("Tatooine-TDm3", "TDm3"),
+                        ("Westeros-TDm4", "TDm4")
+                        ]
+            for old, new in rooms:
+                if old in room:
+                    room = new
+                    break;
+            
             # Build the event dictionary
             event = {
                 "guid": component.get("UID").split("-")[-1] if component.get("UID") else None,
@@ -53,16 +71,16 @@ def parse_ics_to_json(ics_content):
                 "start_time": dtstart.strftime('%H:%M'),
                 "end_time": dtend.strftime('%H:%M'),
                 "professor": professor,
-                "room": component.get("LOCATION"),
+                "room": room,
                 "type": None  # Type of event (e.g., TDm, TD, TP, CM)
             }
 
             # Determine the event type (e.g., TDm, TD, TP, CM)
-            event_types = ["TDm", "TD", "TP", "CM"]
-            for event_type in event_types:
+            event_types = [("TDm", "TD"), ("TD", "TD"), ("TP", "TP"), ("CM", "CM")]
+            for event_type, rep in event_types:
                 if f" - {event_type} - " in event["title"]:
                     event["title"] = event["title"].replace(f" - {event_type} - ", " - ")
-                    event["type"] = event_type
+                    event["type"] = rep
                     break
 
             events.append(event)
